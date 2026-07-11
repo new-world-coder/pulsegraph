@@ -29,7 +29,7 @@ This document lists **what is actually implemented today**, maps each item to th
 | Vendor adapters DD/NR/DT | 🧾 HTTP stubs | N/A (overlay unique) |
 | Causal RCA engine | 🧾 Stub | Dynatrace **Davis**, Datadog **Bits AI** / Watchdog |
 | Incident lifecycle (Slack) | 🧾 | incident.io, **Rootly** (SF), FireHydrant |
-| Console UI | 🧾 Shell | All of the above |
+| Console UI / Agentic War Room | 🔶 UI live (agents simulated) | AutonomOps HealR Agentic War Room; Datadog Bits; incident.io AI |
 
 ---
 
@@ -120,6 +120,15 @@ This document lists **what is actually implemented today**, maps each item to th
 | **Status** | ✅ Implemented (docs) |
 | **Inspired by** | Product practice at Rootly / incident.io / Dynatrace (feature matrices, ADRs) |
 | **Code** | `docs/COMPETITIVE_ANALYSIS.md`, `docs/REQUIREMENTS.md`, `docs/HLD.md`, this file |
+
+### F-10 — Agentic War Room console  
+| | |
+|--|--|
+| **Status** | 🔶 Partial (frontend + simulated agents; freeze wired when snapshotter up) |
+| **BF / competitor** | AutonomOps **Agentic War Room** (5-step); Bits Investigation; incident.io AI SRE |
+| **Code** | `apps/console` (`WarRoom.tsx`), [COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md), [CONSOLE_UX.md](CONSOLE_UX.md) |
+| **Behavior** | Intent → Triage/Metrics/Logs/Correlate/RCA/Remediate rail; blast-radius panel; evidence freeze CTA; human approve remediation (no silent auto-exec) |
+| **Gap** | Real agent backends, Agent Chat, predictive intel, Dashboard GPT (see AutonomOps gap list) |
 
 ---
 

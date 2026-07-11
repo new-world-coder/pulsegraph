@@ -1,162 +1,136 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
+import { WarRoom } from "./WarRoom";
+import { BlastRadiusGraph, panelStyle } from "./BlastRadiusGraph";
+import { DEMO_EDGES, DEMO_NODES } from "./types";
 
-const NAV_ITEMS = ["Incidents", "Topology", "Metrics", "RCA"] as const;
-type NavItem = (typeof NAV_ITEMS)[number];
+const NAV = ["War Room", "Incidents", "Context Graph", "Evidence"] as const;
+type Nav = (typeof NAV)[number];
 
 export default function App() {
-  const [activeNav, setActiveNav] = useState<NavItem>("Incidents");
+  const [nav, setNav] = useState<Nav>("War Room");
 
   return (
-    <div style={styles.shell}>
-      <header style={styles.header}>
-        <div style={styles.logoArea}>
-          <span style={styles.logoDot} />
-          <span style={styles.logoText}>PulseGraph Console</span>
-        </div>
-        <nav style={styles.nav}>
-          {NAV_ITEMS.map((item) => (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 20,
+          padding: "14px 28px",
+          borderBottom: "1px solid var(--pg-line)",
+          background: "rgba(242,245,243,0.9)",
+          backdropFilter: "blur(8px)",
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.02em" }}>PulseGraph</div>
+        <nav style={{ display: "flex", gap: 4, flex: 1 }}>
+          {NAV.map((item) => (
             <button
               key={item}
-              style={activeNav === item ? { ...styles.navItem, ...styles.navItemActive } : styles.navItem}
-              onClick={() => setActiveNav(item)}
+              type="button"
+              onClick={() => setNav(item)}
+              style={{
+                border: "none",
+                background: nav === item ? "var(--pg-ink)" : "transparent",
+                color: nav === item ? "#f2f5f3" : "var(--pg-ink-soft)",
+                padding: "8px 12px",
+                fontWeight: 500,
+                fontSize: 13,
+              }}
             >
               {item}
             </button>
           ))}
         </nav>
-        <div style={styles.statusBadge}>● Connected</div>
+        <span style={{ fontFamily: "var(--pg-mono)", fontSize: 11, color: "var(--pg-ok)" }}>
+          overlay · multi-vendor
+        </span>
       </header>
 
-      <main style={styles.main}>
-        <h1 style={styles.pageTitle}>{activeNav}</h1>
-        <Placeholder section={activeNav} />
+      <main style={{ flex: 1, padding: "28px clamp(16px, 4vw, 40px)", maxWidth: 1280, width: "100%", margin: "0 auto" }}>
+        {nav === "War Room" && <WarRoom />}
+        {nav === "Incidents" && <IncidentsView />}
+        {nav === "Context Graph" && <GraphView />}
+        {nav === "Evidence" && <EvidenceView />}
       </main>
     </div>
   );
 }
 
-function Placeholder({ section }: { section: NavItem }) {
-  const descriptions: Record<NavItem, string> = {
-    Incidents: "Active and historical incidents grouped by correlation window. Powered by the correlator service.",
-    Topology: "Live service dependency graph built from distributed trace spans. Explore upstream and downstream dependencies.",
-    Metrics: "Time-series metric explorer backed by ClickHouse. Filter by service, environment, and time range.",
-    RCA: "ML-powered root-cause analysis results. Each incident links to a hypothesis with confidence score and contributing factors.",
-  };
-
+function IncidentsView() {
+  const rows = [
+    { id: "inc-7f2a", sev: "SEV-2", title: "checkout latency", status: "investigating" },
+    { id: "inc-19bc", sev: "SEV-3", title: "orders-db slow queries", status: "resolved" },
+  ];
   return (
-    <div style={styles.placeholder}>
-      <div style={styles.placeholderIcon}>⬡</div>
-      <p style={styles.placeholderText}>{descriptions[section]}</p>
-      <p style={styles.placeholderSub}>
-        This view will be implemented once the <code>query-api</code> is wired up.
-      </p>
+    <div style={panelStyle}>
+      <h1 style={{ marginTop: 0, fontSize: 28 }}>Incidents</h1>
+      <p style={{ color: "var(--pg-ink-soft)" }}>Fixture list until query-api is live. Open War Room to investigate.</p>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+        <thead>
+          <tr style={{ textAlign: "left", fontFamily: "var(--pg-mono)", fontSize: 11 }}>
+            <th style={th}>ID</th>
+            <th style={th}>Sev</th>
+            <th style={th}>Title</th>
+            <th style={th}>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.id}>
+              <td style={td}>
+                <code>{r.id}</code>
+              </td>
+              <td style={td}>{r.sev}</td>
+              <td style={td}>{r.title}</td>
+              <td style={td}>{r.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
 
-const styles = {
-  shell: {
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-    minHeight: "100vh",
-    backgroundColor: "#0f1117",
-    color: "#e2e8f0",
-    display: "flex",
-    flexDirection: "column" as const,
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    padding: "0 24px",
-    height: "56px",
-    backgroundColor: "#1a1d27",
-    borderBottom: "1px solid #2d3147",
-    gap: "24px",
-  },
-  logoArea: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    marginRight: "12px",
-  },
-  logoDot: {
-    display: "inline-block",
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    backgroundColor: "#6366f1",
-    boxShadow: "0 0 8px #6366f1",
-  },
-  logoText: {
-    fontWeight: 600,
-    fontSize: "15px",
-    letterSpacing: "-0.01em",
-    color: "#f1f5f9",
-  },
-  nav: {
-    display: "flex",
-    gap: "4px",
-    flex: 1,
-  },
-  navItem: {
-    padding: "6px 14px",
-    border: "none",
-    borderRadius: "6px",
-    background: "transparent",
-    color: "#94a3b8",
-    fontSize: "13px",
-    fontWeight: 500,
-    cursor: "pointer",
-    transition: "background 0.15s",
-  },
-  navItemActive: {
-    backgroundColor: "#2d3147",
-    color: "#e2e8f0",
-  },
-  statusBadge: {
-    fontSize: "12px",
-    color: "#4ade80",
-    fontWeight: 500,
-  },
-  main: {
-    flex: 1,
-    padding: "40px 32px",
-    maxWidth: "1200px",
-    width: "100%",
-    margin: "0 auto",
-  },
-  pageTitle: {
-    fontSize: "22px",
-    fontWeight: 700,
-    color: "#f1f5f9",
-    marginBottom: "32px",
-    letterSpacing: "-0.02em",
-  },
-  placeholder: {
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "80px 40px",
-    border: "1px dashed #2d3147",
-    borderRadius: "12px",
-    textAlign: "center" as const,
-    gap: "12px",
-  },
-  placeholderIcon: {
-    fontSize: "40px",
-    color: "#6366f1",
-    marginBottom: "8px",
-  },
-  placeholderText: {
-    fontSize: "15px",
-    color: "#94a3b8",
-    maxWidth: "480px",
-    lineHeight: 1.6,
-    margin: 0,
-  },
-  placeholderSub: {
-    fontSize: "13px",
-    color: "#475569",
-    margin: 0,
-  },
-} as const;
+function GraphView() {
+  return (
+    <div style={panelStyle}>
+      <h1 style={{ marginTop: 0, fontSize: 28 }}>Context Graph</h1>
+      <p style={{ color: "var(--pg-ink-soft)" }}>
+        Live data: <code>GET topology-builder:8091/v1/graph/subgraph</code>. Demo topology below.
+      </p>
+      <BlastRadiusGraph nodes={DEMO_NODES} edges={DEMO_EDGES} />
+    </div>
+  );
+}
+
+function EvidenceView() {
+  return (
+    <div style={panelStyle}>
+      <h1 style={{ marginTop: 0, fontSize: 28 }}>Evidence</h1>
+      <p style={{ color: "var(--pg-ink-soft)", maxWidth: 520 }}>
+        Immutable freeze bundles live in MinIO (<code>snapshots/&#123;tenant&#125;/&#123;incident&#125;/</code>). Trigger from War
+        Room or <code>POST /v1/freeze</code> on snapshotter.
+      </p>
+      <ul style={{ fontFamily: "var(--pg-mono)", fontSize: 13 }}>
+        <li>manifest.json</li>
+        <li>metrics.json · logs.json · traces.json</li>
+        <li>topology/subgraph.json</li>
+      </ul>
+    </div>
+  );
+}
+
+const th: CSSProperties = {
+  borderBottom: "1px solid var(--pg-line)",
+  padding: "8px 6px",
+  fontWeight: 500,
+};
+
+const td: CSSProperties = {
+  borderBottom: "1px solid var(--pg-line)",
+  padding: "10px 6px",
+};
