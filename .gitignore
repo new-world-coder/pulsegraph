@@ -12,6 +12,8 @@ vendor/
 
 # ── Python ───────────────────────────────────────────────────────
 __pycache__/
+.run/
+go.work.sum
 *.py[cod]
 *.pyo
 .venv/

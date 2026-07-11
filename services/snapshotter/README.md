@@ -1,32 +1,54 @@
 # snapshotter
 
-Go service that periodically captures the current state of the service topology graph and metric baselines, serialises them as compressed blobs to MinIO, and writes snapshot metadata to ClickHouse — enabling the RCA engine to replay historical state for root-cause analysis.
+Go service that performs **incident-triggered telemetry freeze**: on `snapshot.commands` (or `POST /v1/freeze`), it captures a time-bounded MELT window + context-graph subgraph, writes an immutable JSON bundle to MinIO, and publishes a `snapshot.refs` pointer for RCA.
+
+## Freeze window (HLD defaults)
+
+- Pre-window: **10 minutes**
+- Post-window: **2 minutes**
+- Topology depth: **2**
+
+## Bundle layout (MinIO)
+
+```
+s3://snapshots/{tenant_id}/{incident_id}/
+  manifest.json              # SHA-256 index + window metadata
+  metrics.json               # Melt envelopes (metrics) in window
+  logs.json
+  traces.json
+  topology/subgraph.json     # from topology-builder Context Graph API
+```
 
 ## Responsibilities
 
-- Subscribe to `normalised.events` and `topology.changes` topics
-- On a configurable interval (default 1 minute), snapshot:
-  - Current topology adjacency list
-  - Per-service metric baselines (p50/p95/p99 over past 5 min)
-  - Active incident window state
-- Compress and write blobs to MinIO bucket `snapshots`
-- Write snapshot index record to ClickHouse table `snapshots.records`
+- Buffer recent `norm.melt` envelopes in memory (ring buffer)
+- Consume `snapshot.commands` and run freeze pipeline
+- Fetch subgraph from `TOPOLOGY_URL` (`topology-builder`)
+- Put objects to MinIO; publish `snapshot.refs`
+- HTTP:
+  - `GET /healthz`
+  - `POST /v1/freeze` — synchronous manual freeze
+  - `GET /v1/snapshots/{incident_id}` — last in-process ref
 
 ## Configuration
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `KAFKA_BROKERS` | `localhost:9092` | Redpanda broker addresses |
-| `MINIO_ENDPOINT` | `http://localhost:9001` | MinIO S3 endpoint |
+| `PORT` | `8092` | HTTP listen port |
+| `KAFKA_BROKERS` | `localhost:9092` | Redpanda brokers |
+| `MINIO_ENDPOINT` | `http://localhost:9001` | S3 API endpoint |
+| `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` | `pulsegraph` / `pulsegraph123` | Credentials |
 | `MINIO_SNAPSHOTS_BUCKET` | `snapshots` | Target bucket |
-| `CLICKHOUSE_HOST` | `localhost:8123` | ClickHouse HTTP endpoint |
-| `SNAPSHOT_INTERVAL_SEC` | `60` | Snapshot frequency |
-| `LOG_LEVEL` | `info` | Structured log level |
+| `TOPOLOGY_URL` | `http://localhost:8091` | Context Graph service |
+| `SNAPSHOT_BUFFER_MAX` | `5000` | Max buffered envelopes |
 
 ## Running Locally
 
 ```bash
-go run ./cmd/server/main.go
+go run ./cmd/server
+curl -s -X POST localhost:8092/v1/freeze \
+  -H 'Content-Type: application/json' \
+  -d '{"service_name":"checkout","trigger":"manual"}'
 ```
 
 ## Building

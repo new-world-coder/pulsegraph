@@ -1,0 +1,13 @@
+go 1.22
+
+use (
+	./packages/melt
+	./packages/kafkautil
+	./packages/contextgraph
+	./packages/snapshot
+	./services/adapter-otel
+	./services/ingest-gateway
+	./services/normalizer
+	./services/topology-builder
+	./services/snapshotter
+)
