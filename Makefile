@@ -33,6 +33,8 @@ tidy: ## go mod tidy for MVP packages/services
 	@cd services/adapter-otel && go mod tidy
 	@cd services/ingest-gateway && go mod tidy
 	@cd services/normalizer && go mod tidy
+	@cd services/topology-builder && go mod tidy
+	@cd services/snapshotter && go mod tidy
 
 run-mvp: ## Run adapter-otel + ingest-gateway + normalizer (needs make up && make bootstrap)
 	@echo "Start each in its own terminal (or use scripts/run-mvp.sh):"
@@ -43,6 +45,9 @@ run-mvp: ## Run adapter-otel + ingest-gateway + normalizer (needs make up && mak
 
 smoke-ingest: ## POST sample OTLP/JSON through the MVP pipeline
 	@bash scripts/smoke-ingest.sh
+
+smoke-snapshot: ## Trigger incident freeze via snapshotter
+	@bash scripts/smoke-snapshot.sh
 
 ## ─── Build ─────────────────────────────────────────────────────
 

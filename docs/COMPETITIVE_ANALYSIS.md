@@ -225,7 +225,7 @@ This is the most structurally critical group. An accurate, live, multi-vendor Co
 | **BF-019** | On-call scheduling and escalation | ❌ Missing | Out of initial scope per HLD |
 | **BF-020** | Automated postmortem generation | ❌ Missing | Not designed |
 | **BF-021** | Status page | ❌ Missing | Not in scope for MVP |
-| **BF-022** | Incident-triggered telemetry freeze | ❌ Missing | `snapshotter` is a startup stub. MinIO bucket exists. ClickHouse/OpenSearch writes not wired. Postgres schema not migrated |
+| **BF-022** | Incident-triggered telemetry freeze | 🔶 Scaffolded | `snapshotter` freezes MELT ring-buffer + topology subgraph to MinIO with manifest SHA-256; ClickHouse/Parquet/WORM lock still outstanding |
 | **BF-023** | WORM / object-lock snapshot storage | ❌ Missing | MinIO object-lock not configured in bootstrap |
 | **BF-024** | Deployment change correlation | ❌ Missing | No deployment event ingestion |
 | **BF-025** | Comparative baseline (before/after) | ❌ Missing | Requires storage writes as prerequisite |
