@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pulsegraph-rca-engine"
+version = "0.1.0"
+description = "PulseGraph Root-Cause Analysis (RCA) ML worker"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Kafka consumer
+    "confluent-kafka>=2.3.0",
+    # HTTP server for health / RCA result API
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    # Data / ML (placeholder versions — pin after model selection)
+    "numpy>=1.26.0",
+    "pandas>=2.2.0",
+    "scikit-learn>=1.4.0",
+    # ClickHouse driver
+    "clickhouse-connect>=0.7.0",
+    # OpenSearch client
+    "opensearch-py>=2.5.0",
+    # MinIO / S3
+    "minio>=7.2.0",
+    # Structured logging
+    "structlog>=24.1.0",
+    # Settings management
+    "pydantic-settings>=2.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.4.0",
+    "mypy>=1.9.0",
+    "httpx>=0.27.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rca_engine"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
