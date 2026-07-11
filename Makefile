@@ -1,7 +1,9 @@
-.PHONY: up down ps bootstrap build test lint help
+.PHONY: up down ps bootstrap build test lint help run-mvp smoke-ingest tidy
 
 COMPOSE_FILE ?= docker-compose.yml
 COMPOSE      := docker compose -f $(COMPOSE_FILE)
+
+MVP_SERVICES := adapter-otel ingest-gateway normalizer
 
 ## ─── Infrastructure ────────────────────────────────────────────
 
@@ -25,6 +27,22 @@ logs: ## Tail logs from all containers (Ctrl-C to stop)
 
 bootstrap: ## Create Kafka topics and MinIO buckets
 	@bash scripts/bootstrap.sh
+
+tidy: ## go mod tidy for MVP packages/services
+	@cd packages/kafkautil && go mod tidy
+	@cd services/adapter-otel && go mod tidy
+	@cd services/ingest-gateway && go mod tidy
+	@cd services/normalizer && go mod tidy
+
+run-mvp: ## Run adapter-otel + ingest-gateway + normalizer (needs make up && make bootstrap)
+	@echo "Start each in its own terminal (or use scripts/run-mvp.sh):"
+	@echo "  go run ./services/ingest-gateway/cmd/server"
+	@echo "  go run ./services/normalizer/cmd/server"
+	@echo "  go run ./services/adapter-otel/cmd/server"
+	@bash scripts/run-mvp.sh
+
+smoke-ingest: ## POST sample OTLP/JSON through the MVP pipeline
+	@bash scripts/smoke-ingest.sh
 
 ## ─── Build ─────────────────────────────────────────────────────
 

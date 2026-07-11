@@ -1,6 +1,8 @@
 # topology-builder
 
-Go Kafka consumer that builds and continuously updates the live service dependency graph by extracting caller/callee relationships from distributed trace spans. The resulting graph is stored in OpenSearch and made queryable via the `query-api`.
+Go Kafka consumer that builds and continuously updates the **context graph** (live service dependency / entity relationship graph) by extracting caller/callee edges from distributed trace spans. Nodes are services (and later resources/DBs); edges carry call-rate, error-rate, and latency. The graph feeds blast-radius overlays, incident snapshots, and RCA graph-walk hypotheses.
+
+Stored in OpenSearch (and Postgres for durability per HLD) and exposed via `query-api`.
 
 ## Responsibilities
 
