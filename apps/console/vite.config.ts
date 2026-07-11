@@ -10,6 +10,16 @@ export default defineConfig({
         target: "http://localhost:8090",
         changeOrigin: true,
       },
+      "/freeze": {
+        target: "http://localhost:8092",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/freeze/, "/v1/freeze"),
+      },
+      "/graph": {
+        target: "http://localhost:8091",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/graph/, "/v1/graph"),
+      },
     },
   },
   build: {

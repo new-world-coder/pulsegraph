@@ -1,42 +1,29 @@
-# console
+# PulseGraph Console
 
-React + TypeScript + Vite single-page application for the PulseGraph observability console.
+React + TypeScript + Vite UI. **Default home = Agentic War Room** (AutonomOps-inspired multi-agent investigation), differentiated by PulseGraph **evidence freeze** + **Context Graph**.
 
-## Features (planned)
+## Screens
 
-- **Incidents** — active and historical incident list with severity, timeline, and correlation trace
-- **Topology** — interactive service dependency graph with real-time edge health overlays
-- **Metrics** — time-series explorer backed by ClickHouse via query-api
-- **RCA** — root-cause analysis results from rca-engine with confidence scores and recommended actions
+| Tab | Purpose |
+|-----|---------|
+| War Room | Intent box, 6-step agent rail, blast radius, RCA hypotheses, freeze + HITL remediate |
+| Incidents | List (fixtures until query-api) |
+| Context Graph | Topology view |
+| Evidence | Freeze bundle layout |
 
-## Running Locally
+See [docs/CONSOLE_UX.md](../../docs/CONSOLE_UX.md) and mockup [docs/assets/pulsegraph-war-room-mockup.png](../../docs/assets/pulsegraph-war-room-mockup.png).
+
+## Run
 
 ```bash
-# Install dependencies
+cd apps/console
 npm install
-
-# Start dev server (proxies /api/* to query-api on :8090)
 npm run dev
-# → http://localhost:3000
+# http://localhost:3000
 ```
 
-## Building
+Proxies:
 
-```bash
-npm run build
-# Output: dist/
-```
-
-## Configuration
-
-The dev server proxies `/api` requests to `http://localhost:8090` (query-api). See `vite.config.ts`.
-
-For production, set `VITE_API_BASE_URL` to the deployed query-api URL.
-
-## Tech Stack
-
-| Library | Version | Purpose |
-|---------|---------|---------|
-| React | 18 | UI framework |
-| TypeScript | 5 | Type safety |
-| Vite | 5 | Build tool & dev server |
+- `/freeze` → snapshotter `:8092/v1/freeze`
+- `/graph` → topology-builder `:8091/v1/graph`
+- `/api` → query-api `:8090`
