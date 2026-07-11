@@ -119,6 +119,17 @@ make ps
 
 ## Documentation
 
-- [Requirements](docs/REQUIREMENTS.md)
-- [High-Level Design](docs/HLD.md)
-- [Docs Index](docs/README.md)
+Start at the **[Docs Index](docs/README.md)**. Key manuals:
+
+| Manual | Description |
+|--------|-------------|
+| [Oracle Setup](docs/ORACLE_SETUP.md) | Always Free ARM VM, ports, you vs Cursor handoff |
+| [Features](docs/FEATURES.md) | Implemented features with competitor citations |
+| [User Manual](docs/USER_MANUAL.md) | Day-to-day freeze / graph workflow |
+| [Deployment](docs/DEPLOYMENT.md) | Local + VM deploy |
+| [Testing](docs/TESTING.md) | Unit & smoke tests |
+| [Integration](docs/INTEGRATION.md) | OTel, Datadog, Dynatrace, PagerDuty, Rootly… |
+| [Pilot Litmus](docs/PILOT_LITMUS.md) | Customer litmus levels L0–L4 |
+| [Operations](docs/OPERATIONS.md) | Health, backups, failures |
+| [Security](docs/SECURITY.md) | Pilot security expectations |
+| [Requirements](docs/REQUIREMENTS.md) / [HLD](docs/HLD.md) | Product & design |
