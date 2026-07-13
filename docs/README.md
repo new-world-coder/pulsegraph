@@ -10,6 +10,7 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 | See what is implemented vs competitors | **[FEATURES.md](FEATURES.md)** |
 | AutonomOps / Agentic War Room gaps | **[COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md)** |
 | Console screens & War Room UX | **[CONSOLE_UX.md](CONSOLE_UX.md)** |
+| Java microservices rewrite (docs only) | **[java/README.md](java/README.md)** |
 | Use the product day-to-day | **[USER_MANUAL.md](USER_MANUAL.md)** |
 | Deploy locally or on a VM | **[DEPLOYMENT.md](DEPLOYMENT.md)** |
 | Run tests & smokes | **[TESTING.md](TESTING.md)** |
@@ -37,6 +38,7 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 | [GLOSSARY.md](GLOSSARY.md) | Living | MTTR, Smartscape, freeze, etc. |
 | [COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md) | Active | AutonomOps/HealR gaps; War Room mapping |
 | [CONSOLE_UX.md](CONSOLE_UX.md) | Active | Frontend screens + War Room UX |
+| [java/](java/README.md) | Design (no code yet) | **Java microservices rewrite blueprint**: inventory, comms, HLD, sequences |
 | [assets/pulsegraph-war-room-mockup.png](assets/pulsegraph-war-room-mockup.png) | Visual | War Room mockup |
 
 ## Design & product

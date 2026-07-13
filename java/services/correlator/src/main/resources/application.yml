@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8084}
+spring:
+  application:
+    name: correlator
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-correlator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "Cross-signal correlation and snapshot triggers"

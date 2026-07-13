@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8083}
+spring:
+  application:
+    name: normalizer
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-normalizer
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "Consume raw.melt, normalize, produce norm.melt"

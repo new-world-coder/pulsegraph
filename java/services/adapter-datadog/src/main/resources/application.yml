@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8200}
+spring:
+  application:
+    name: adapter-datadog
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-adapter-datadog
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "Datadog adapter stub to ingest-gateway"

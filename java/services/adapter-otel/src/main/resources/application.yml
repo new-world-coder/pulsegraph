@@ -1,0 +1,14 @@
+server:
+  port: ${PORT:4318}
+spring:
+  application:
+    name: adapter-otel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+pulsegraph:
+  ingest-gateway-url: ${INGEST_GATEWAY_URL:http://localhost:8081}
+  tenant-id: ${TENANT_ID:default}
+  description: "OTLP/HTTP ingress to MeltEnvelope then ingest-gateway"
