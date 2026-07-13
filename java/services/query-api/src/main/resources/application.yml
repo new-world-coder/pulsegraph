@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8090}
+spring:
+  application:
+    name: query-api
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-query-api
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "REST BFF for console / War Room"

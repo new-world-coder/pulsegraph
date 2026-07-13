@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8201}
+spring:
+  application:
+    name: adapter-newrelic
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-adapter-newrelic
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "New Relic adapter stub to ingest-gateway"

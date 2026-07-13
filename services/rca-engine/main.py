@@ -8,8 +8,10 @@ ML-based root-cause analysis and publish results to `rca.results`.
 Run directly:
     python main.py
 
-Or via uvicorn for the health / results API:
-    uvicorn main:app --host 0.0.0.0 --port 8095
+Or via uvicorn as the **Python ML sidecar** for the Java RCA orchestrator:
+    uvicorn main:app --host 0.0.0.0 --port 8096
+
+Java `rca-engine` (Spring Boot :8095) calls this sidecar at PYTHON_SIDECAR_URL.
 """
 
 from __future__ import annotations
@@ -136,7 +138,14 @@ try:
 
     @app.get("/healthz")
     def health() -> dict[str, str]:
-        return {"status": "ok", "service": "rca-engine"}
+        return {"status": "ok", "service": "rca-engine-python-sidecar", "role": "ml-sidecar"}
+
+    @app.post("/v1/analyze")
+    def analyze(body: dict[str, Any]) -> dict[str, Any]:
+        """HTTP entry used by Java rca-engine orchestrator."""
+        result = analyze_incident(body if isinstance(body, dict) else {})
+        result["source"] = "python-sidecar"
+        return result
 
     @app.get("/api/v1/rca/{incident_id}")
     def get_rca_result(incident_id: str) -> dict[str, Any]:

@@ -1,0 +1,18 @@
+server:
+  port: ${PORT:8081}
+spring:
+  application:
+    name: ingest-gateway
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  raw-topic: raw.melt
+  description: "Validate MeltEnvelope and publish raw.melt"
