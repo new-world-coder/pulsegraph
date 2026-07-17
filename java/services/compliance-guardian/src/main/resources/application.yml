@@ -1,0 +1,14 @@
+server:
+  port: ${PORT:8096}
+spring:
+  application:
+    name: compliance-guardian
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "Compliant Agent control plane: registry, autonomy policy, approvals, audit, kill switch, evidence packs"
+  guardian:
+    seed: ${GUARDIAN_SEED:true}

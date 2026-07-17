@@ -5,8 +5,13 @@
 
 ## Modules
 
-- **libs/** — `common`, `melt`, `kafka`, `contextgraph`, `snapshot`
-- **services/** — 11 Spring Boot apps (adapters ×4, gateway, normalizer, correlator, topology-builder, snapshotter, rca-engine, query-api)
+- **libs/** — `common`, `melt`, `kafka`, `contextgraph`, `snapshot`, `compliance`
+- **services/** — 12 Spring Boot apps (adapters ×4, gateway, normalizer, correlator, topology-builder, snapshotter, rca-engine, query-api, **compliance-guardian**)
+
+The **compliance-guardian** service is the Compliant Agent control plane (agent registry, autonomy
+policy, human approvals, hash-chained audit, kill switch, regulatory evidence packs). See
+[`services/compliance-guardian/README.md`](services/compliance-guardian/README.md) and
+[`../docs/COMPLIANT_AGENT.md`](../docs/COMPLIANT_AGENT.md).
 
 ## Build
 

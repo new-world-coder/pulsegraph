@@ -17,6 +17,7 @@
     <module>libs/kafka</module>
     <module>libs/contextgraph</module>
     <module>libs/snapshot</module>
+    <module>libs/compliance</module>
     <module>services/adapter-otel</module>
     <module>services/adapter-datadog</module>
     <module>services/adapter-newrelic</module>
@@ -28,6 +29,7 @@
     <module>services/snapshotter</module>
     <module>services/rca-engine</module>
     <module>services/query-api</module>
+    <module>services/compliance-guardian</module>
   </modules>
 
   <properties>
@@ -69,6 +71,11 @@
       <dependency>
         <groupId>com.pulsegraph</groupId>
         <artifactId>snapshot</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.pulsegraph</groupId>
+        <artifactId>compliance</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
