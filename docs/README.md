@@ -8,6 +8,7 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 |-----------------|------|
 | Create the Oracle pilot VM | **[ORACLE_SETUP.md](ORACLE_SETUP.md)** |
 | See what is implemented vs competitors | **[FEATURES.md](FEATURES.md)** |
+| Govern AI agents for regulated banks | **[COMPLIANT_AGENT.md](COMPLIANT_AGENT.md)** |
 | AutonomOps / Agentic War Room gaps | **[COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md)** |
 | Console screens & War Room UX | **[CONSOLE_UX.md](CONSOLE_UX.md)** |
 | Java microservices rewrite (docs only) | **[java/README.md](java/README.md)** |
@@ -34,6 +35,7 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 | [INTEGRATION.md](INTEGRATION.md) | Active | Third-party observability & incident tool wiring |
 | [PILOT_LITMUS.md](PILOT_LITMUS.md) | Active | L0–L4 litmus plan and customer one-pager |
 | [OPERATIONS.md](OPERATIONS.md) | Active | Health checks, failure modes, backups |
+| [COMPLIANT_AGENT.md](COMPLIANT_AGENT.md) | Implemented (pilot) | Compliant Agent control plane; EU AI Act / DORA / MAS / NIST mapping |
 | [SECURITY.md](SECURITY.md) | Pilot | Data handling; what not to claim yet |
 | [GLOSSARY.md](GLOSSARY.md) | Living | MTTR, Smartscape, freeze, etc. |
 | [COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md) | Active | AutonomOps/HealR gaps; War Room mapping |
