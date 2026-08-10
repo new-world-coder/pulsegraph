@@ -29,7 +29,8 @@ This document lists **what is actually implemented today**, maps each item to th
 | Vendor adapters DD/NR/DT | 🧾 HTTP stubs | N/A (overlay unique) |
 | Causal RCA engine | 🧾 Stub | Dynatrace **Davis**, Datadog **Bits AI** / Watchdog |
 | Incident lifecycle (Slack) | 🧾 | incident.io, **Rootly** (SF), FireHydrant |
-| Console UI / Agentic War Room | 🔶 UI live (agents simulated) | AutonomOps HealR Agentic War Room; Datadog Bits; incident.io AI |
+| Console UI / Agentic War Room | 🔶 UI live (agents simulated) | Agentic SRE War Room pattern; Datadog Bits; incident.io AI |
+| Compliant Agent control plane | 🔶 Service live (in-memory) | No direct analogue; AI governance stacks (Credo AI, Holistic AI) + platform guardrails |
 
 ---
 
@@ -125,10 +126,21 @@ This document lists **what is actually implemented today**, maps each item to th
 | | |
 |--|--|
 | **Status** | 🔶 Partial (frontend + simulated agents; freeze wired when snapshotter up) |
-| **BF / competitor** | AutonomOps **Agentic War Room** (5-step); Bits Investigation; incident.io AI SRE |
-| **Code** | `apps/console` (`WarRoom.tsx`), [COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md), [CONSOLE_UX.md](CONSOLE_UX.md) |
+| **BF / competitor** | Market **Agentic War Room** (5-step); Bits Investigation; incident.io AI SRE |
+| **Code** | `apps/console` (`WarRoom.tsx`), [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md), [CONSOLE_UX.md](CONSOLE_UX.md) |
 | **Behavior** | Intent → Triage/Metrics/Logs/Correlate/RCA/Remediate rail; blast-radius panel; evidence freeze CTA; human approve remediation (no silent auto-exec) |
-| **Gap** | Real agent backends, Agent Chat, predictive intel, Dashboard GPT (see AutonomOps gap list) |
+| **Gap** | Real agent backends, Agent Chat, predictive intel, Dashboard GPT (see [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md)) |
+
+### F-11 — Compliant Agent control plane  
+| | |
+|--|--|
+| **Status** | 🔶 Partial (service live end-to-end; stores in-memory) |
+| **BF / competitor** | No single competitor owns this; AI-governance tooling (Credo AI, Holistic AI) + hyperscaler guardrails; PulseGraph-native governance-graph angle |
+| **Code** | `java/services/compliance-guardian`, `java/libs/compliance`, [COMPLIANT_AGENT.md](COMPLIANT_AGENT.md) |
+| **Behavior** | Agent registry; autonomy policy (OBSERVE/RECOMMEND/REQUIRE_APPROVAL/EXECUTE) with least-privilege + data-governance checks; human dual/four-eyes approvals; SHA-256 hash-chained audit trail with verification; global + per-agent kill switch; one-click regulatory evidence packs |
+| **APIs** | `/v1/agents`, `/v1/authorize`, `/v1/approvals/{id}/decide`, `/v1/audit`, `/v1/audit/verify`, `/v1/kill-switch/*`, `/v1/evidence-packs/{incidentId}` on `:8096` |
+| **Regulatory mapping** | EU AI Act (Art.11–14), DORA (Art.5, 17–19, 24–30), MAS FEAT/Veritas/MindForge, NIST AI RMF, ISO 42001 |
+| **Gap** | Persistence is in-memory (no WORM/ledger yet); no RBAC/authn; agent security-testing harness, drift monitoring, and third-party/SBOM register still on roadmap |
 
 ---
 

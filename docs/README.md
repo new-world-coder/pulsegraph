@@ -8,7 +8,8 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 |-----------------|------|
 | Create the Oracle pilot VM | **[ORACLE_SETUP.md](ORACLE_SETUP.md)** |
 | See what is implemented vs competitors | **[FEATURES.md](FEATURES.md)** |
-| AutonomOps / Agentic War Room gaps | **[COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md)** |
+| Govern AI agents for regulated banks | **[COMPLIANT_AGENT.md](COMPLIANT_AGENT.md)** |
+| Agentic War Room market gaps | **[AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md)** |
 | Console screens & War Room UX | **[CONSOLE_UX.md](CONSOLE_UX.md)** |
 | Java microservices rewrite (docs only) | **[java/README.md](java/README.md)** |
 | Use the product day-to-day | **[USER_MANUAL.md](USER_MANUAL.md)** |
@@ -34,9 +35,10 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 | [INTEGRATION.md](INTEGRATION.md) | Active | Third-party observability & incident tool wiring |
 | [PILOT_LITMUS.md](PILOT_LITMUS.md) | Active | L0–L4 litmus plan and customer one-pager |
 | [OPERATIONS.md](OPERATIONS.md) | Active | Health checks, failure modes, backups |
+| [COMPLIANT_AGENT.md](COMPLIANT_AGENT.md) | Implemented (pilot) | Compliant Agent control plane; EU AI Act / DORA / MAS / NIST mapping |
 | [SECURITY.md](SECURITY.md) | Pilot | Data handling; what not to claim yet |
 | [GLOSSARY.md](GLOSSARY.md) | Living | MTTR, Smartscape, freeze, etc. |
-| [COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md) | Active | AutonomOps/HealR gaps; War Room mapping |
+| [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md) | Active | Agentic War Room market gaps; step mapping |
 | [CONSOLE_UX.md](CONSOLE_UX.md) | Active | Frontend screens + War Room UX |
 | [java/](java/README.md) | Design (no code yet) | **Java microservices rewrite blueprint**: inventory, comms, HLD, sequences |
 | [assets/pulsegraph-war-room-mockup.png](assets/pulsegraph-war-room-mockup.png) | Visual | War Room mockup |
