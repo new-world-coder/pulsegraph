@@ -77,7 +77,7 @@ Dual-run: Go and Java services must **not** share the same consumer group IDs un
 - Rewriting React console to Java/Vaadin  
 - Kubernetes Helm charts  
 - Changing Kafka topic names  
-- Claiming feature parity with AutonomOps predictive suite on day one  
+- Claiming feature parity with the full predictive / agentic-SRE suite on day one  
 
 ---
 

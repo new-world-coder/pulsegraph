@@ -95,8 +95,7 @@ PulseGraph's Context Graph already models services, dependencies, deployments, a
 Compliant Agent layer extends it into a **governance graph**: each agent decision links to its
 `identity → policy → model → data lineage → evidence → approval → tool call → resulting change →
 regulatory control`. The audit trail is the edge set; evidence packs are graph queries scoped to an
-incident. This is the differentiator for entering regulated financial services and the basis for the
-architecture discussion in the AutonomOps outreach.
+incident. This is the differentiator for entering regulated financial services.
 
 ---
 

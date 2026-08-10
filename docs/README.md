@@ -9,7 +9,7 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 | Create the Oracle pilot VM | **[ORACLE_SETUP.md](ORACLE_SETUP.md)** |
 | See what is implemented vs competitors | **[FEATURES.md](FEATURES.md)** |
 | Govern AI agents for regulated banks | **[COMPLIANT_AGENT.md](COMPLIANT_AGENT.md)** |
-| AutonomOps / Agentic War Room gaps | **[COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md)** |
+| Agentic War Room market gaps | **[AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md)** |
 | Console screens & War Room UX | **[CONSOLE_UX.md](CONSOLE_UX.md)** |
 | Java microservices rewrite (docs only) | **[java/README.md](java/README.md)** |
 | Use the product day-to-day | **[USER_MANUAL.md](USER_MANUAL.md)** |
@@ -38,7 +38,7 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 | [COMPLIANT_AGENT.md](COMPLIANT_AGENT.md) | Implemented (pilot) | Compliant Agent control plane; EU AI Act / DORA / MAS / NIST mapping |
 | [SECURITY.md](SECURITY.md) | Pilot | Data handling; what not to claim yet |
 | [GLOSSARY.md](GLOSSARY.md) | Living | MTTR, Smartscape, freeze, etc. |
-| [COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md) | Active | AutonomOps/HealR gaps; War Room mapping |
+| [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md) | Active | Agentic War Room market gaps; step mapping |
 | [CONSOLE_UX.md](CONSOLE_UX.md) | Active | Frontend screens + War Room UX |
 | [java/](java/README.md) | Design (no code yet) | **Java microservices rewrite blueprint**: inventory, comms, HLD, sequences |
 | [assets/pulsegraph-war-room-mockup.png](assets/pulsegraph-war-room-mockup.png) | Visual | War Room mockup |

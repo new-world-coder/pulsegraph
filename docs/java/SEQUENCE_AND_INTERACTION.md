@@ -185,10 +185,10 @@ flowchart LR
 
 ---
 
-## 7. Traceability to AutonomOps War Room steps
+## 7. Traceability to War Room investigation steps
 
-| AutonomOps step | PulseGraph interaction |
-|-----------------|------------------------|
+| War Room step | PulseGraph interaction |
+|---------------|------------------------|
 | Triage | Intent + severity in UI / correlator |
 | Parallel investigate | Agents over freeze + live APIs |
 | RCA | `rca-engine` ← `snapshot.refs` |

@@ -1,23 +1,21 @@
-# Competitor: AutonomOps (HealR) — Gap Analysis
+# Agentic War Room — Market Gap Analysis
 
-**Site:** [https://autonomops.ai](https://autonomops.ai)  
-**Product branding:** HealR / AutonomOps AI — Agentic AI SRE  
 **Related:** [FEATURES.md](FEATURES.md) · [COMPETITIVE_ANALYSIS.md](COMPETITIVE_ANALYSIS.md) · [CONSOLE_UX.md](CONSOLE_UX.md)
 
 ---
 
 ## 1. Positioning
 
-AutonomOps markets an **Agentic SRE** platform whose headline differentiator is the **Agentic War Room**: multi-agent, 5-step autonomous investigation (triage → parallel investigate → RCA → blast radius → remediation with human approval). Adjacent features include Agent Chat, Topology GPT, Dashboard GPT, Predictive Intelligence, and auto-remediation playbooks.
+The agentic SRE / incident-investigation category centers on a **multi-agent War Room**: staged autonomous investigation (triage → parallel investigate → RCA → blast radius → remediation with human approval). Adjacent patterns in the market include agent chat over telemetry, NL topology/dashboard generation, predictive intelligence, and auto-remediation playbooks.
 
-PulseGraph remains an **overlay** (multi-vendor MELT + Context Graph + immutable freeze). We should **not** copy their “replace your observability stack” pitch; we **should** match the War Room interaction model as the primary console experience.
+PulseGraph remains an **overlay** (multi-vendor MELT + Context Graph + immutable freeze). We should **not** pitch “replace your observability stack”; we **should** match the War Room interaction model as the primary console experience while differentiating on evidence freeze and cross-vendor Context Graph.
 
 ---
 
-## 2. AutonomOps feature checklist vs PulseGraph
+## 2. Market capability checklist vs PulseGraph
 
-| AutonomOps capability | Priority for us | PulseGraph status | Notes |
-|----------------------|-----------------|-------------------|-------|
+| Capability | Priority for us | PulseGraph status | Notes |
+|------------|-----------------|-------------------|-------|
 | **Agentic War Room (5-step)** | P0 | 🔶 UI built; agents simulated | Console War Room ships with staged agent pipeline + freeze CTA |
 | Multi-agent investigate (metrics/logs/traces/RCA/remediation) | P0 | 🧾 Backend stubs | Wire to `rca-engine` + snapshotter next |
 | Blast radius visualization | P0 | 🔶 API exists | War Room embeds graph panel; live fetch TBD |
@@ -37,23 +35,23 @@ PulseGraph remains an **overlay** (multi-vendor MELT + Context Graph + immutable
 
 ---
 
-## 3. War Room 5-step mapping (AutonomOps → PulseGraph)
+## 3. War Room 5-step mapping → PulseGraph
 
-| Step | AutonomOps | PulseGraph implementation plan |
-|------|------------|--------------------------------|
+| Step | Market pattern | PulseGraph implementation plan |
+|------|----------------|--------------------------------|
 | 1 Intelligent Triage | Classify / prioritize | Severity + service from webhook/freeze command |
 | 2 Parallel Investigation | Metrics/Logs/Traces agents | Fan-out over freeze bundle + live APIs |
 | 3 Root Cause Analysis | RCA agent | `rca-engine` hypotheses + confidence |
 | 4 Impact Assessment | Blast radius | Context Graph `/blast-radius` |
 | 5 Automated Remediation | Suggest/execute + HITL | Suggest only until policy engine exists; **Freeze** is our unique step 0/1 evidence lock |
 
-**PulseGraph exclusive step:** **Evidence Freeze** (immutable MinIO bundle) — AutonomOps does not advertise multi-vendor WORM freeze.
+**PulseGraph exclusive step:** **Evidence Freeze** (immutable MinIO bundle) — multi-vendor WORM freeze is not a common advertised War Room step elsewhere.
 
 ---
 
-## 4. Must-have list (product backlog from this competitor)
+## 4. Must-have list (product backlog)
 
-1. **Agentic War Room** as default console home (this PR / build).  
+1. **Agentic War Room** as default console home.  
 2. Shared investigation state across agents (timeline + evidence refs).  
 3. Intent box: natural-language incident kickoff.  
 4. Live blast-radius panel fed by topology-builder.  
@@ -66,6 +64,6 @@ PulseGraph remains an **overlay** (multi-vendor MELT + Context Graph + immutable
 
 ## 5. What we will not copy blindly
 
-- Inflated marketing metrics (91% / 86%) without our own measurement.  
+- Inflated marketing metrics without our own measurement.  
 - Closed-loop auto-heal on customer prod without explicit policy.  
 - Claiming to replace Datadog/Dynatrace — contradicts overlay thesis.

@@ -1,6 +1,6 @@
 # PulseGraph Console
 
-React + TypeScript + Vite UI. **Default home = Agentic War Room** (AutonomOps-inspired multi-agent investigation), differentiated by PulseGraph **evidence freeze** + **Context Graph**.
+React + TypeScript + Vite UI. **Default home = Agentic War Room** (multi-agent investigation), differentiated by PulseGraph **evidence freeze** + **Context Graph**.
 
 ## Screens
 
