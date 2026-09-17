@@ -46,3 +46,7 @@ Thumbs.db
 proto/gen/
 coverage/
 *.coverprofile
+
+# Accidental local service binaries
+services/*/server
+services/*/bin/
