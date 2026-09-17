@@ -1,7 +1,8 @@
 # PulseGraph — High-Level Design
 
-> **Status:** Draft v0.1 · Jul 2026  
-> **Owner:** Platform Architecture
+> **Status:** Approved v1.0 · Sep 2026  
+> **Owner:** Platform Architecture  
+> **Companion:** [REQUIREMENTS.md](./REQUIREMENTS.md) (Approved v1.0)
 
 ---
 
@@ -17,7 +18,8 @@
 8. [Failure Modes & Resilience](#8-failure-modes--resilience)
 9. [Security](#9-security)
 10. [Deployment Topology](#10-deployment-topology)
-11. [Phased Delivery](#11-phased-delivery)
+11. [Platform SLOs (MTTD / MTTR)](#11-platform-slos-mttd--mttr)
+12. [Phased Delivery](#12-phased-delivery)
 
 ---
 
@@ -40,7 +42,7 @@ PulseGraph is an **observability correlation platform** that:
 | Driver | Requirement |
 |--------|-------------|
 | **Vendor agnosticism** | Must ingest from Datadog, New Relic, Dynatrace, and native OTel without coupling internal models to any vendor schema. |
-| **Low-latency ingest** | P99 ingest-to-correlation latency ≤ 5 s for steady-state MELT volume. |
+| **Low-latency ingest** | Ingest-to-queryable ≤ 30 s p95 / ≤ 60 s p99 (REQ-N-001/002); correlation ≤ 30 s p95 (REQ-N-003). |
 | **Immutable snapshots** | Incident evidence must be frozen and tamper-proof for audit and postmortem. |
 | **Pluggable RCA** | Rules, graph analysis, statistical anomaly detection, and LLM-assisted narrative are independently deployable strategies. |
 | **Operational simplicity** | Single `docker compose up` for local development; cloud-native Kubernetes path for production. |
@@ -219,7 +221,7 @@ sequenceDiagram
     C->>K3: Produce SnapshotCommand<br/>{incident_id, window_start, window_end, entity_ids}
 
     K3->>S: Consume SnapshotCommand
-    S->>CH: Query metrics + traces for entity_ids × [window_start–window_end + 2 min buffer]
+    S->>CH: Query metrics + traces for entity_ids × [window_start–window_end]<br/>(default T−30m … T+15m per REQ-F-038)
     S->>OS: Query logs for entity_ids × window
     S->>TB: GetSubgraph(entity_ids, depth=2)
     S->>S: Assemble SnapshotBundle<br/>(Parquet partitions + JSON manifest)
@@ -278,11 +280,13 @@ sequenceDiagram
 
 ### 5.1 Capture Window
 
+Aligned with REQ-F-038 / OQ-08.
+
 | Parameter | Value | Rationale |
 |-----------|-------|-----------|
-| **Pre-incident window** | T−10 min | Captures metric drift and anomalous traces before trigger |
-| **Post-trigger buffer** | T+2 min | Captures immediate propagation effects |
-| **Total default window** | 12 min (configurable per rule) | Balances completeness vs snapshot size |
+| **Pre-incident window** | T−30 min | Captures metric drift, deploys, and anomalous traces before trigger |
+| **Post-trigger buffer** | T+15 min (extends while incident is open) | Captures propagation and early remediation signals |
+| **Log sample cap** | ≤ 100k lines (configurable) | Hard cost ceiling for snapshot size |
 | **Entity scope** | Direct entities + depth-2 topology neighbours | Captures upstream/downstream blast radius |
 
 ### 5.2 Storage Layout
@@ -484,11 +488,15 @@ rca-engine is a Python worker pool. A crash loop does not affect ingest or the c
 
 ### 9.2 Authorisation (RBAC)
 
+Roles match REQ-F-082:
+
 | Role | Capabilities |
 |------|-------------|
-| `viewer` | Read incidents, snapshots, RCA results for assigned tenants |
-| `operator` | Viewer + trigger RCA rerun, acknowledge incidents |
-| `admin` | Operator + manage alert rules, RBAC, topology hints |
+| `viewer` | Read-only access to signals and incidents for assigned tenants |
+| `responder` | Viewer + acknowledge/annotate incidents, trigger manual freeze, RCA feedback |
+| `platform-engineer` | Responder + manage adapter configs and correlation rules |
+| `tenant-admin` | Platform-engineer + manage users/roles within tenant |
+| `system-admin` | Cross-tenant operations and system configuration |
 | `system` | Internal service identity (mTLS only); not assignable to humans |
 
 RBAC policies are stored in PostgreSQL (`roles`, `role_bindings`, `tenants` tables) and cached in api-gateway (TTL 60 s).
@@ -602,7 +610,42 @@ Kubernetes Cluster
 
 ---
 
-## 11. Phased Delivery
+## 11. Platform SLOs (MTTD / MTTR)
+
+PulseGraph exists to shrink **MTTD** and **MTTR**. The platform itself is held to the following service-level objectives (see also REQUIREMENTS §6–§7).
+
+### 11.1 Outcome SLOs (customer impact)
+
+| SLO | Target | Measurement |
+|-----|--------|-------------|
+| **MTTR reduction** | ≥ 40% median MTTR reduction for P0/P1 within 90 days of team onboarding (SM-01) | PulseGraph-assisted vs pre-onboarding baseline |
+| **Time-to-context** | ≤ 3 minutes from page/alert to correlated incident view with first hypothesis, p50 (SM-02) | Incident create → first hypothesis timestamp |
+| **Snapshot coverage** | ≥ 95% of P0/P1 incidents have a complete snapshot within 10 minutes (SM-04 / REQ-N-004) | Incident create → snapshot manifest complete |
+
+### 11.2 Pipeline SLOs (PulseGraph as a system)
+
+| SLO | Target | Alerting |
+|-----|--------|----------|
+| Ingest → queryable | ≤ 30 s p95, ≤ 60 s p99 | Self-monitoring burn-rate (REQ-N-031) |
+| Correlation edge write | ≤ 30 s p95 after constituent signals | Consumer lag + corr latency histogram |
+| Freeze start | ≤ 60 s after incident create | `snapshot_status` transition SLA |
+| First RCA hypothesis | ≤ 5 min after snapshot finalization (95% of incidents with ≥ 3 correlated signals) | `rca_status` / hypothesis publish |
+| API / console reads | ≤ 2 s p95 | api-gateway latency SLO |
+| API + console availability | 99.9% monthly | Synthetic + uptime |
+
+### 11.3 Failure-mode mapping
+
+| Failure | MTTD/MTTR impact | Mitigation (see §8) |
+|---------|------------------|---------------------|
+| Vendor adapter outage | Delayed MTTD for that vendor only | Independent adapters; other sources continue |
+| Kafka / Redpanda broker loss | Brief ingest interruption | At-least-once topics; rebalance < 60 s |
+| ClickHouse / OpenSearch down | Live query degraded; freeze may degrade | Local write buffer; snapshot replay from MinIO |
+| Snapshot write failure | Postmortem evidence gap | Retry 5 min → `snapshot_status=degraded`; RCA topology-only |
+| RCA worker crash | Hypotheses delayed (MTTR impact) | Kafka offset commit only after `rca.results`; UI shows pending |
+
+---
+
+## 12. Phased Delivery
 
 ### Phase 0 — Foundation (Weeks 1–2)
 
@@ -649,4 +692,4 @@ Kubernetes Cluster
 ---
 
 *For deeper component internals and sequence diagrams, see [ARCHITECTURE.md](./ARCHITECTURE.md).*  
-*For architectural decision records, see [adr/](./adr/).*
+*For architectural decision records, see [adr/](./adr).*

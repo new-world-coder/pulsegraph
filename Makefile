@@ -52,7 +52,8 @@ smoke-snapshot: ## Trigger incident freeze via snapshotter
 ## ─── Build ─────────────────────────────────────────────────────
 
 GO_SERVICES := adapter-datadog adapter-newrelic adapter-dynatrace adapter-otel \
-               ingest-gateway normalizer correlator snapshotter topology-builder query-api
+               ingest-gateway normalizer correlator snapshotter topology-builder \
+               api-gateway query-api
 
 build: ## Build all Go services
 	@for svc in $(GO_SERVICES); do \
