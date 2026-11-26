@@ -1,6 +1,7 @@
 package com.pulsegraph.guardian.web;
 
 import com.pulsegraph.guardian.GovernanceService;
+import com.pulsegraph.guardian.GovernanceService.ExecutionPermit;
 import com.pulsegraph.guardian.model.ApprovalRequest;
 import com.pulsegraph.guardian.store.ApprovalStore;
 import java.util.Collection;
@@ -44,5 +45,12 @@ public class ApprovalController {
         .orElse(ResponseEntity.notFound().build());
   }
 
+  @PostMapping("/{id}/permit")
+  public ExecutionPermit permit(@PathVariable("id") String id, @RequestBody PermitRequest req) {
+    return governance.permit(id, req.planHash(), req.idempotencyKey());
+  }
+
   public record DecisionRequest(String approver, String role, boolean granted, String comment) {}
+
+  public record PermitRequest(String planHash, String idempotencyKey) {}
 }

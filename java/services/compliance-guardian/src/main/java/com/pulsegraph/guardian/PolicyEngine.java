@@ -1,5 +1,6 @@
 package com.pulsegraph.guardian;
 
+import com.pulsegraph.compliance.ActionPolicy;
 import com.pulsegraph.compliance.ActionRequest;
 import com.pulsegraph.compliance.AgentIdentity;
 import com.pulsegraph.compliance.AutonomyMode;
@@ -11,6 +12,7 @@ import com.pulsegraph.guardian.store.AgentRegistry;
 import com.pulsegraph.guardian.store.KillSwitch;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Component;
  *   <li>Unknown agent &rarr; DENY.
  *   <li>Kill switch engaged (global or per-agent) &rarr; DENY.
  *   <li>Tool not on the agent's approved list (least privilege) &rarr; DENY.
+ *   <li>Deny list, data-store target, service boundary, or scoped allow list &rarr; DENY.
  *   <li>Data classification exceeds the agent's clearance (data governance) &rarr; DENY.
  *   <li>Agent autonomy OBSERVE &rarr; DENY (may not act).
  *   <li>Agent autonomy RECOMMEND / REQUIRE_APPROVAL &rarr; REQUIRE_APPROVAL.
@@ -36,10 +39,18 @@ public class PolicyEngine {
 
   private final AgentRegistry registry;
   private final KillSwitch killSwitch;
+  private final ActionPolicy actionPolicy;
 
-  public PolicyEngine(AgentRegistry registry, KillSwitch killSwitch) {
+  @Autowired
+  public PolicyEngine(AgentRegistry registry, KillSwitch killSwitch, ActionPolicy actionPolicy) {
     this.registry = registry;
     this.killSwitch = killSwitch;
+    this.actionPolicy = actionPolicy;
+  }
+
+  /** Callers outside Spring use the packaged {@code action-policy.json}. */
+  public PolicyEngine(AgentRegistry registry, KillSwitch killSwitch) {
+    this(registry, killSwitch, ActionPolicy.loadDefault());
   }
 
   public PolicyDecision evaluate(ActionRequest req) {
@@ -61,6 +72,13 @@ public class PolicyEngine {
     if (!agent.isToolApproved(req.tool())) {
       return PolicyDecision.deny(
           "Tool '" + req.tool() + "' is not in the agent's approved tool list (least privilege).",
+          List.of(RegulatoryControl.DORA_ICT_RISK_GOVERNANCE, RegulatoryControl.NIST_GOVERN));
+    }
+
+    Optional<String> floor = actionPolicy.denial(req);
+    if (floor.isPresent()) {
+      return PolicyDecision.deny(
+          floor.get(),
           List.of(RegulatoryControl.DORA_ICT_RISK_GOVERNANCE, RegulatoryControl.NIST_GOVERN));
     }
 

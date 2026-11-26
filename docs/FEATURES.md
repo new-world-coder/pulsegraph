@@ -125,11 +125,11 @@ This document lists **what is actually implemented today**, maps each item to th
 ### F-10 — Agentic War Room console  
 | | |
 |--|--|
-| **Status** | 🔶 Partial (frontend + simulated agents; freeze wired when snapshotter up) |
+| **Status** | 🔶 Partial (manager and gate are real; evidence in the console is a submitted bundle, not live Prometheus) |
 | **BF / competitor** | Market **Agentic War Room** (5-step); Bits Investigation; incident.io AI SRE |
 | **Code** | `apps/console` (`WarRoom.tsx`), [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md), [CONSOLE_UX.md](CONSOLE_UX.md) |
-| **Behavior** | Intent → Triage/Metrics/Logs/Correlate/RCA/Remediate rail; blast-radius panel; evidence freeze CTA; human approve remediation (no silent auto-exec) |
-| **Gap** | Real agent backends, Agent Chat, predictive intel, Dashboard GPT (see [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md)) |
+| **Behavior** | Console calls `war-room` (`:8097`). The manager fans out metrics, logs, topology, and deploy over a submitted evidence bundle, loops once when confidence is low, and proposes a schema-bound operation. The guardian must approve the plan hash before the in-memory canary (1 of 5) runs. A repeat of the same idempotency key does not apply again. |
+| **Gap** | No live Prometheus, Grafana, ELK, Splunk, or Kubernetes executor. Agent chat and predictive intel are still absent (see [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md)) |
 
 ### F-11 — Compliant Agent control plane  
 | | |
@@ -137,7 +137,7 @@ This document lists **what is actually implemented today**, maps each item to th
 | **Status** | 🔶 Partial (service live end-to-end; stores in-memory) |
 | **BF / competitor** | No single competitor owns this; AI-governance tooling (Credo AI, Holistic AI) + hyperscaler guardrails; PulseGraph-native governance-graph angle |
 | **Code** | `java/services/compliance-guardian`, `java/libs/compliance`, [COMPLIANT_AGENT.md](COMPLIANT_AGENT.md) |
-| **Behavior** | Agent registry; autonomy policy (OBSERVE/RECOMMEND/REQUIRE_APPROVAL/EXECUTE) with least-privilege + data-governance checks; human dual/four-eyes approvals; SHA-256 hash-chained audit trail with verification; global + per-agent kill switch; one-click regulatory evidence packs |
+| **Behavior** | Agent registry; autonomy policy; config deny list and bounded allow list (`action-policy.json`); service-boundary and data-store refusals; approvals bound to a plan hash; idempotent execution permit; model version stamped on each decision; SHA-256 hash-chained audit including investigation events; kill switch; evidence packs |
 | **APIs** | `/v1/agents`, `/v1/authorize`, `/v1/approvals/{id}/decide`, `/v1/audit`, `/v1/audit/verify`, `/v1/kill-switch/*`, `/v1/evidence-packs/{incidentId}` on `:8096` |
 | **Regulatory mapping** | EU AI Act (Art.11–14), DORA (Art.5, 17–19, 24–30), MAS FEAT/Veritas/MindForge, NIST AI RMF, ISO 42001 |
 | **Gap** | Persistence is in-memory (no WORM/ledger yet); no RBAC/authn; agent security-testing harness, drift monitoring, and third-party/SBOM register still on roadmap |

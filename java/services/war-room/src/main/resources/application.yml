@@ -1,0 +1,13 @@
+server:
+  port: ${PORT:8097}
+spring:
+  application:
+    name: war-room
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+pulsegraph:
+  warroom:
+    guardian-url: ${GUARDIAN_URL:}
