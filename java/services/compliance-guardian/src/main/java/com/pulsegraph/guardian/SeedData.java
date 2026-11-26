@@ -40,5 +40,20 @@ public class SeedData implements CommandLineRunner {
             AutonomyMode.RECOMMEND,
             "active",
             Instant.now()));
+    governance.registerAgent(
+        new AgentIdentity(
+            "agent-remediation",
+            "PulseGraph Remediation",
+            "sre-platform-team",
+            "Propose a bounded operation from a confirmed hypothesis.",
+            List.of(
+                "set-connection-pool", "rollback-release", "scale-replicas", "restart-pod"),
+            "pulsegraph-deterministic",
+            "2026.11",
+            DataClassification.CONFIDENTIAL,
+            RiskTier.HIGH,
+            AutonomyMode.REQUIRE_APPROVAL,
+            "active",
+            Instant.now()));
   }
 }

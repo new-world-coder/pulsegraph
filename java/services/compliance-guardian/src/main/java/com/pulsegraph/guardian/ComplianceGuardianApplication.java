@@ -1,8 +1,10 @@
 package com.pulsegraph.guardian;
 
+import com.pulsegraph.compliance.ActionPolicy;
 import java.util.Map;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComplianceGuardianApplication {
   public static void main(String[] args) {
     SpringApplication.run(ComplianceGuardianApplication.class, args);
+  }
+
+  @Bean
+  ActionPolicy actionPolicy() {
+    return ActionPolicy.loadDefault();
   }
 
   @RestController

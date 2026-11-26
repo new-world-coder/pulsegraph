@@ -66,11 +66,14 @@ Evaluated in order; the first match wins:
 1. Unknown agent → **DENY**
 2. Kill switch tripped (global or per-agent) → **DENY**
 3. Tool not approved for the agent → **DENY** (least privilege)
-4. Data classification above the agent's clearance → **DENY** (data governance)
-5. Agent `maxAutonomy = OBSERVE` → **DENY** (may not act)
-6. Agent `maxAutonomy = RECOMMEND | REQUIRE_APPROVAL` → **REQUIRE_APPROVAL**
-7. Agent `maxAutonomy = EXECUTE` **and** (HIGH+ risk **or** production destructive/customer-impacting) → **REQUIRE_APPROVAL** (CRITICAL → four-eyes)
-8. Otherwise → **ALLOW** (autonomous, fully audited)
+4. Deny list, data-store target, service boundary, or scoped allow list → **DENY** (the floor is `action-policy.json`; model confidence is not an input)
+5. Data classification above the agent's clearance → **DENY** (data governance)
+6. Agent `maxAutonomy = OBSERVE` → **DENY** (may not act)
+7. Agent `maxAutonomy = RECOMMEND | REQUIRE_APPROVAL` → **REQUIRE_APPROVAL**
+8. Agent `maxAutonomy = EXECUTE` **and** (HIGH+ risk **or** production destructive/customer-impacting) → **REQUIRE_APPROVAL** (CRITICAL → four-eyes)
+9. Otherwise → **ALLOW** (autonomous, fully audited)
+
+A remediation plan is hashed before that decision. The approval stores the hash. `POST /v1/approvals/{id}/permit` refuses a different hash, and a repeated idempotency key does not authorise a second execution. Each decision record includes the agent’s model version. Investigation artefacts (detection through verification) append to the same chain via `POST /v1/audit/events`.
 
 ---
 

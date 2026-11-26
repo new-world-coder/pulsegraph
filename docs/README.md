@@ -47,9 +47,9 @@ Design docs, operator manuals, and ADRs for the PulseGraph platform.
 
 | Document | Status | Description |
 |----------|--------|-------------|
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Draft v0 | HLRs, MoSCoW, NFRs, open questions |
-| [HLD.md](HLD.md) | Draft v0 | High-level design, C4, flows |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Draft v0 | Components, topics, sequences |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | **Approved v1.0** | HLRs, MoSCoW, NFRs, resolved decisions |
+| [HLD.md](HLD.md) | **Approved v1.0** | C4, adapters, snapshot freeze, RCA, failure modes, MTTD/MTTR SLOs |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | **Approved v1.0** | Components, topics, sequences, monorepo layout |
 | [CONTEXT_GRAPH.md](CONTEXT_GRAPH.md) | Partial impl | Context Graph model & APIs |
 | [COMPETITIVE_ANALYSIS.md](COMPETITIVE_ANALYSIS.md) | Draft v0 | Competitor matrix, BF-001–052 backlog |
 | [adr/](adr/) | Living | Architecture Decision Records |

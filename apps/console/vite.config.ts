@@ -20,6 +20,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/graph/, "/v1/graph"),
       },
+      "/war-room": {
+        target: "http://localhost:8097",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/war-room/, ""),
+      },
     },
   },
   build: {

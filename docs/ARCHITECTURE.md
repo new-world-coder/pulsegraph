@@ -1,7 +1,7 @@
 # PulseGraph — Component Architecture
 
-> **Status:** Draft v0.1 · Jul 2026  
-> Cross-reference: [HLD.md](./HLD.md) for system-level design.
+> **Status:** Approved v1.0 · Sep 2026  
+> Cross-reference: [HLD.md](./HLD.md) for system-level design; [REQUIREMENTS.md](./REQUIREMENTS.md) for MoSCoW requirements.
 
 ---
 
@@ -22,14 +22,19 @@
 
 ## 1. Repository Layout
 
+Reflects the monorepo as scaffolded (Go workspace under `packages/` + `services/`; console under `apps/`).
+
 ```
 pulsegraph/
-├── proto/                          # Protobuf definitions (source of truth)
-│   ├── pulsegraph/ingest/v1/
-│   ├── pulsegraph/norm/v1/
-│   ├── pulsegraph/snapshot/v1/
-│   ├── pulsegraph/topology/v1/
-│   └── pulsegraph/rca/v1/
+├── apps/
+│   └── console/                    # TypeScript / React / Vite War Room UI
+│
+├── packages/                       # Shared Go libraries (go.work members)
+│   ├── melt/                       # MELT envelope + topic constants + OTLP/JSON helpers
+│   ├── kafkautil/                  # Producer/consumer wrappers
+│   ├── snapshot/                   # Incident snapshot bundle types & MinIO helpers
+│   ├── contextgraph/               # Context Graph model
+│   └── otel-normalize/             # Vendor → OTel normalisation helpers (planned)
 │
 ├── services/
 │   ├── adapter-datadog/            # Go
@@ -42,48 +47,20 @@ pulsegraph/
 │   ├── topology-builder/           # Go
 │   ├── snapshotter/                # Go
 │   ├── rca-engine/                 # Python
-│   ├── api-gateway/                # Go
-│   ├── query-api/                  # Go
-│   └── console/                    # TypeScript / React / Vite
+│   ├── api-gateway/                # Go (JWT/RBAC edge; stubs)
+│   └── query-api/                  # Go
 │
-├── libs/
-│   ├── go/
-│   │   ├── otelconv/               # OTel semantic convention helpers
-│   │   ├── kafkautil/              # Producer/consumer wrappers with DLQ
-│   │   ├── s3util/                 # MinIO/S3 helpers
-│   │   └── middleware/             # Auth, tracing, metrics middleware
-│   └── python/
-│       ├── pgraph_snapshot/        # Snapshot reader (Parquet)
-│       ├── pgraph_topology/        # Topology gRPC client
-│       └── pgraph_rca/             # Strategy base classes
+├── java/                           # Optional Spring Boot rewrite scaffold (docs + stubs)
 │
-├── rules/                          # RCA YAML rule files (versioned)
-│   └── default/
-│       ├── connection-pool.yaml
-│       ├── memory-pressure.yaml
-│       └── cascade-timeout.yaml
+├── proto/                          # Protobuf definitions (source of truth as schemas land)
 │
-├── infra/
-│   ├── docker-compose.yml
-│   ├── docker-compose.test.yml
-│   ├── clickhouse/                 # init SQL + schema migrations
-│   ├── opensearch/                 # index templates
-│   ├── postgres/                   # Flyway migrations
-│   └── minio/                      # bucket + policy bootstrap
-│
-├── docs/
-│   ├── HLD.md
-│   ├── ARCHITECTURE.md
-│   ├── api/
-│   │   └── openapi.yaml            # generated from query-api annotations
-│   └── adr/
-│
-└── scripts/
-    ├── generate-proto.sh
-    ├── generate-dev-secrets.sh
-    └── seed-demo-telemetry.sh
+├── deploy/compose/                 # Compose override notes
+├── docker-compose.yml              # Local data plane (Redpanda, CH, OS, MinIO, Postgres)
+├── docs/                           # REQUIREMENTS, HLD, ARCHITECTURE, ADRs, manuals
+└── scripts/                        # bootstrap, smoke-ingest, smoke-snapshot, run-mvp
 ```
 
+Planned (not yet required for blueprint completeness): `rules/` for RCA YAML, `infra/` migration trees, and full `proto/pulsegraph/**` trees — see proto README and Phase 0 in HLD.
 ---
 
 ## 2. Component Responsibilities
@@ -98,7 +75,7 @@ Each adapter is a thin translation layer — it speaks the vendor's wire format 
 | Concern | Detail |
 |---------|--------|
 | Inbound protocols | Datadog: HTTP webhook (JSON) + Datadog API poll; New Relic: MELT API (JSON); Dynatrace: Problems API HTTP push; OTel: gRPC/HTTP OTLP |
-| Translation | Vendor field → OTel semantic convention attribute mapping, documented in `libs/go/otelconv/` |
+| Translation | Vendor field → OTel semantic convention attribute mapping, documented in `packages/otel-normalize/` and adapter READMEs |
 | Enrichment | Adds `pulsegraph.source` resource attribute identifying the originating vendor |
 | Idempotency | Datadog/NR/DT adapters deduplicate by vendor-provided event ID using a Redis TTL-keyed bloom filter (shared via Redpanda's built-in key-value store) |
 | Error handling | Non-retryable parse errors are logged + metrics-incremented; payload is dropped with a `adapter.parse_error` counter |
@@ -325,7 +302,7 @@ sequenceDiagram
 
     C->>C: Anomaly threshold exceeded or webhook received
     C->>PG: INSERT incidents (id=UUID-v7, status=open, severity, trigger_labels, started_at)
-    C->>K: PRODUCE SnapshotCommand {incident_id, tenant_id, window_start=T-10m, window_end=T+2m, entity_ids=[...]}
+    C->>K: PRODUCE SnapshotCommand {incident_id, tenant_id, window_start=T-30m, window_end=T+15m, entity_ids=[...]}
 
     K-->>S: CONSUME SnapshotCommand (at-least-once)
     S->>S: Validate command; mark snapshot_status=collecting in PG

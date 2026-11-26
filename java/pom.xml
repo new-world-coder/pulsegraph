@@ -18,6 +18,7 @@
     <module>libs/contextgraph</module>
     <module>libs/snapshot</module>
     <module>libs/compliance</module>
+    <module>libs/warroom</module>
     <module>services/adapter-otel</module>
     <module>services/adapter-datadog</module>
     <module>services/adapter-newrelic</module>
@@ -30,6 +31,7 @@
     <module>services/rca-engine</module>
     <module>services/query-api</module>
     <module>services/compliance-guardian</module>
+    <module>services/war-room</module>
   </modules>
 
   <properties>
@@ -78,6 +80,11 @@
         <artifactId>compliance</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.pulsegraph</groupId>
+        <artifactId>warroom</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -95,6 +102,7 @@
           <version>3.13.0</version>
           <configuration>
             <release>${maven.compiler.release}</release>
+            <parameters>true</parameters>
           </configuration>
         </plugin>
       </plugins>
