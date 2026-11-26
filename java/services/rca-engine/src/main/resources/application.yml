@@ -1,0 +1,13 @@
+server:
+  port: ${PORT:8095}
+spring:
+  application:
+    name: rca-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  python-sidecar-url: ${PYTHON_SIDECAR_URL:http://localhost:8096}
+  description: "Java RCA orchestrator calling Python ML sidecar"

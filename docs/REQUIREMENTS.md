@@ -1,10 +1,11 @@
 # PulseGraph — High-Level Requirements Document
 
 **Document ID:** PG-REQ-001  
-**Version:** 0.1 (Draft)  
-**Date:** 2026-07-11  
-**Status:** In Review  
+**Version:** 1.0 (Approved)  
+**Date:** 2026-09-17  
+**Status:** Approved  
 **Authors:** Platform Engineering / SRE Leadership  
+**Approved defaults:** PulseGraph name/path; Go ingest/correlation + TypeScript/React console + Python RCA/ML; event-driven Ingest → Normalize → Correlate → Snapshot → RCA → API/UI; OTel canonical model with vendor adapters; Kafka-compatible streaming (Redpanda locally); ClickHouse + OpenSearch + MinIO; triggers = vendor webhooks + SLO burn-rate + anomaly + manual freeze; docker-compose local deploy.
 
 ---
 
@@ -29,7 +30,7 @@
 7. [Success Metrics](#7-success-metrics)
 8. [Constraints & Assumptions](#8-constraints--assumptions)
 9. [Out of Scope for v1](#9-out-of-scope-for-v1)
-10. [Open Questions](#10-open-questions)
+10. [Resolved Decisions](#10-resolved-decisions-formerly-open-questions)
 
 ---
 
@@ -495,24 +496,24 @@ The following capabilities are explicitly deferred and will not be implemented i
 
 ---
 
-## 10. Open Questions
+## 10. Resolved Decisions (formerly Open Questions)
 
-The following questions require decisions from the product owner, security review, or external stakeholders before implementation begins or before v1 launch. Do not assume an answer without explicit resolution.
+Decisions below are **Approved for v1** from product defaults and HLD alignment. Items that still need per-customer legal/security sign-off are marked **Customer gate** (architecture is fixed; enablement is gated).
 
-| ID | Question | Owner | Impact |
-|----|----------|-------|--------|
-| OQ-01 | **Vendor webhook security**: How will PulseGraph authenticate inbound vendor webhooks to prevent spoofed alert injections? (Options: shared HMAC secret per vendor, IP allowlist, mTLS.) What is the expected vendor support for each? | Platform Eng + Security | REQ-F-030, REQ-N-018 |
-| OQ-02 | **Snapshot storage tier**: Should incident snapshots be stored in the same cloud account as the live ClickHouse cluster, or in a separate, isolated account/region for additional durability guarantees? What are the cost implications? | Infra + Finance | REQ-F-040, REQ-N-010 |
-| OQ-03 | **PII redaction reversibility**: Should PulseGraph support a tokenization mode (reversible PII substitution for authorized users) in addition to irreversible hashing? This affects security model complexity and compliance posture. | Security + Legal | REQ-N-020 |
-| OQ-04 | **LLM provider selection**: If the RCA engine's LLM-assisted narrative (REQ-F-055) is implemented in v1, which LLM provider(s) are approved for use? Are there data residency constraints (e.g., no signal content may leave a specific cloud region)? | Security + Legal | REQ-F-055 |
-| OQ-05 | **Tenant billing model**: Will tenants be billed by signal volume, by number of services, or by some other unit? This affects the multi-tenancy quota and rate-limiting design. | Product + Finance | REQ-N-014, REQ-F-082 |
-| OQ-06 | **RCA feedback loop granularity**: Should hypothesis accept/reject feedback be scoped at the hypothesis level or at the individual evidence-link level? Finer granularity enables better ML training but adds UX complexity. | Product + ML | REQ-F-054 |
-| OQ-07 | **Cross-tenant service map**: If two tenants share a common platform service (e.g., a shared API gateway), should that service appear in both tenants' service maps? If so, how is signal isolation maintained? | Platform Eng + Product | REQ-F-058, REQ-F-083 |
-| OQ-08 | **Snapshot capture cost budget**: What is the acceptable storage cost per captured incident snapshot? This drives the log line sample cap (default 100k in REQ-F-039) and metric resolution during capture. Without a cost ceiling, snapshot size is unbounded. | Finance + Product | REQ-F-039 |
-| OQ-09 | **Disaster recovery RTO/RPO**: What are the RTO and RPO targets for PulseGraph itself? (e.g., if the ClickHouse cluster is lost, what is the acceptable time-to-restore and data-loss window?) These drive backup frequency and multi-region replication decisions. | Infra + SRE | REQ-N-008–REQ-N-012 |
-| OQ-10 | **Soft-tenancy trust boundary**: In the soft-tenancy model (OOS-05), what is the acceptable blast radius if a tenant-isolation bug is discovered? Does the organization require contractual guarantees of data isolation (which would necessitate hard tenancy sooner)? | Legal + Security | REQ-F-083, REQ-F-088 |
-| OQ-11 | **Vendor license/export terms**: Do the Datadog, New Relic, and Dynatrace contracts permit bulk export and re-storage of signals outside the vendor platform? This is a legal pre-requisite for the adapter architecture. | Legal | REQ-F-001–REQ-F-003 |
-| OQ-12 | **On-call runbook integration**: Should PulseGraph surface existing runbook links (e.g., from PagerDuty or a wiki) alongside RCA hypotheses? If so, what is the runbook discovery mechanism? | Product + SRE | REQ-F-048 |
+| ID | Decision | Rationale | Impact |
+|----|----------|-----------|--------|
+| OQ-01 | **Webhook auth = per-vendor shared HMAC secret** validated at ingest-gateway / adapter edge. Optional IP allowlist as defense-in-depth. mTLS only where the vendor supports it. | Matches HLD §9.1; broadly supported by Datadog/NR/Dynatrace webhook configs. | REQ-F-030, REQ-N-018 |
+| OQ-02 | **Same cloud account, dedicated snapshots bucket** with Object Lock (WORM) and lifecycle rules. Separate account/region replication is a v1.x hardening option, not a v1 blocker. | Local MinIO path and S3-compatible production path stay simple; durability via object lock + versioning. | REQ-F-040, REQ-N-010 |
+| OQ-03 | **Irreversible redaction by default** (hash or drop). Reversible tokenization is deferred (Could / post-v1) and must be explicitly configured + audited if ever enabled. | Minimizes compliance surface for v1; aligns with REQ-N-020. | REQ-N-020 |
+| OQ-04 | **LLM narrative is opt-in and disabled by default** (`RCA_LLM_ENABLED=false`). Provider selection is a deployment-time config when a tenant enables it; no signal content leaves the configured region/provider boundary. | REQ-F-055 is Could; keeps core RCA deterministic without blocking v1. | REQ-F-055 |
+| OQ-05 | **No commercial billing model in v1.** Soft tenancy uses signal-volume **rate limits / quotas** only (not invoices). Billing unit deferred to product packaging. | Platform is open-source / self-hosted first; quotas still protect shared infra. | REQ-N-014, REQ-F-082 |
+| OQ-06 | **Hypothesis-level accept/reject** for v1 feedback. Evidence-link granularity deferred. | Lower UX complexity; still feeds Bayesian weight adjustment (REQ-F-054). | REQ-F-054 |
+| OQ-07 | **Shared platform services may appear in each tenant's map** as nodes, but **signals remain tenant-scoped**. Cross-tenant raw signal access is forbidden. | Preserves blast-radius visibility without breaking soft isolation. | REQ-F-058, REQ-F-083 |
+| OQ-08 | **Hard caps bind snapshot cost**: default ≤ 100k log lines, T−30m … T+15m window (REQ-F-038/039), metric resolution at store grain. No unbounded capture. | Gives a concrete ceiling without a finance model. | REQ-F-039 |
+| OQ-09 | **v1 DR targets: RTO ≤ 4 hours, RPO ≤ 15 minutes** for control plane + hot stores; snapshots remain durable independently via object store. | Fits soft-tenancy overlay posture; multi-region active-active deferred. | REQ-N-008–REQ-N-012 |
+| OQ-10 | **Soft tenancy is acceptable for v1** with automated isolation tests (REQ-F-088). Contractual hard isolation → hard tenancy (OOS-05 / v2). | Matches approved architecture. | REQ-F-083, REQ-F-088 |
+| OQ-11 | **Customer gate:** production adapter enablement requires the customer to confirm vendor contract export/re-storage rights. Product architecture assumes export is permitted. | Legal varies by contract; cannot be globally closed in-repo. | REQ-F-001–REQ-F-003 |
+| OQ-12 | **Surface runbook URL when present** on incident labels / PagerDuty payload. No wiki crawl or runbook authoring in v1. | Low effort, high value; stays advisory-only. | REQ-F-048 |
 
 ---
 
@@ -525,3 +526,4 @@ The following questions require decisions from the product owner, security revie
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.1 | 2026-07-11 | Platform Engineering | Initial draft |
+| 1.0 | 2026-09-17 | Platform Engineering | Promoted to Approved; resolved open questions from product defaults |

@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8091}
+spring:
+  application:
+    name: topology-builder
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-topology-builder
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "Context Graph builder and blast-radius API"

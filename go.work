@@ -10,4 +10,6 @@ use (
 	./services/normalizer
 	./services/topology-builder
 	./services/snapshotter
+	./services/api-gateway
+	./services/query-api
 )

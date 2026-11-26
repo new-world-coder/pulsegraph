@@ -1,0 +1,36 @@
+{
+  "denyPatterns": [
+    "(?i)drop\\s+table",
+    "(?i)drop\\s+database",
+    "(?i)truncate\\s+table",
+    "(?i)delete\\s+from",
+    "(?i)delete-database",
+    "(?i)persistent\\s*volume",
+    "(?i)persistentvolume",
+    "(?i)\\biam\\b",
+    "(?i)terraform\\s+destroy",
+    "(?i)kubectl\\s+delete",
+    "(?i)schema\\s+migration",
+    "(?i)flushall",
+    "(?i)\\brbac\\b"
+  ],
+  "dataStoreTarget": "(?i).*(mysql|postgres|postgresql|mongo|mongodb|redis|elasticsearch|rds|dynamodb).*",
+  "allow": [
+    {
+      "operation": "set-connection-pool",
+      "parameters": { "poolSize": { "min": 1, "max": 200 } }
+    },
+    {
+      "operation": "scale-replicas",
+      "parameters": { "replicas": { "min": 1, "max": 20 } }
+    },
+    {
+      "operation": "restart-pod",
+      "parameters": { "instances": { "min": 1, "max": 1 } }
+    },
+    {
+      "operation": "rollback-release",
+      "parameters": {}
+    }
+  ]
+}

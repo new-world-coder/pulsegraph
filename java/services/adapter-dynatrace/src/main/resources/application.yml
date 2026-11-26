@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8202}
+spring:
+  application:
+    name: adapter-dynatrace
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-adapter-dynatrace
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "Dynatrace adapter stub to ingest-gateway"

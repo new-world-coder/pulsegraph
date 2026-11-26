@@ -60,12 +60,17 @@ PulseGraph is an AIOps observability platform that ingests telemetry from multip
 
 ```
 pulsegraph/
-├── apps/console/          # React + TypeScript UI (Vite)
-├── deploy/compose/        # Docker Compose overrides
-├── docs/                  # Architecture, requirements, ADRs
-├── packages/otel-normalize/ # Shared normalisation helpers
-├── proto/                 # Protobuf / schema stubs
-├── scripts/               # Dev utility scripts
+├── apps/console/            # React + TypeScript War Room UI (Vite)
+├── deploy/compose/          # Docker Compose override notes
+├── docs/                    # REQUIREMENTS, HLD, ARCHITECTURE, ADRs, manuals
+├── packages/
+│   ├── melt/                # MELT envelope + topics
+│   ├── kafkautil/           # Kafka/Redpanda helpers
+│   ├── snapshot/            # Freeze-window bundle helpers
+│   ├── contextgraph/        # Context Graph model
+│   └── otel-normalize/      # Vendor → OTel helpers (planned)
+├── proto/                   # Protobuf / schema stubs
+├── scripts/                 # bootstrap, smoke-ingest, smoke-snapshot
 └── services/
     ├── adapter-datadog/
     ├── adapter-newrelic/
@@ -76,8 +81,9 @@ pulsegraph/
     ├── correlator/
     ├── snapshotter/
     ├── topology-builder/
+    ├── api-gateway/         # JWT/RBAC edge (stub)
     ├── query-api/
-    └── rca-engine/        # Python ML worker
+    └── rca-engine/          # Python ML / RCA worker
 ```
 
 ## Running Locally

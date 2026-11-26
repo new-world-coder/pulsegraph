@@ -1,6 +1,6 @@
 # Console UX — Agentic War Room
 
-**Related:** [COMPETITOR_AUTONOMOPS.md](COMPETITOR_AUTONOMOPS.md) · [USER_MANUAL.md](USER_MANUAL.md) · Mockup: `docs/assets/pulsegraph-war-room-mockup.png`
+**Related:** [AGENTIC_WAR_ROOM_GAPS.md](AGENTIC_WAR_ROOM_GAPS.md) · [USER_MANUAL.md](USER_MANUAL.md) · Mockup: `docs/assets/pulsegraph-war-room-mockup.png`
 
 ---
 
@@ -9,7 +9,7 @@
 | Surface | Tech | Role |
 |---------|------|------|
 | **PulseGraph Console** | React 18 + TypeScript + Vite (`apps/console`) | Primary human UI |
-| Default route | **Agentic War Room** | AutonomOps-inspired multi-agent investigation canvas |
+| Default route | **Agentic War Room** | Multi-agent investigation canvas (triage → RCA → blast radius → HITL) |
 | Secondary | Incidents, Context Graph, Evidence | Navigation tabs |
 
 There is **no** separate mobile app. Console proxies `/api` → `query-api :8090` (when wired); War Room can also call topology `:8091` and snapshotter `:8092` via Vite proxy.

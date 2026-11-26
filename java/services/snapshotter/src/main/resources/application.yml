@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8092}
+spring:
+  application:
+    name: snapshotter
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: java-snapshotter
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+pulsegraph:
+  description: "Incident freeze to MinIO and snapshot.refs"
